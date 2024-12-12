@@ -5,21 +5,49 @@ workflows:
       vars:
         APP_VERSION: 1.0.0
         DEBUG_MODE: false
+        ANDROID_HOME: "/opt/android-sdk"  # تحديد مكان Android SDK
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"  # تحسينات لتسريع البناء
+    # الخطوات التي سيتم تنفيذها في سير العمل:
     scripts:
       - name: Install dependencies
         script: |
+          # تنظيف المشروع وتنزيل التبعيات
+          ./gradlew clean
           ./gradlew build
 
       - name: Run unit tests
         script: |
+          # تشغيل اختبارات الوحدة
           ./gradlew test
 
       - name: Build APK
         script: |
+          # بناء نسخة الـ APK
           ./gradlew assembleRelease
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+        script: |
+          # رفع الـ APK إلى خادم خارجي (تأكد من تعديل الرابط)
+          curl --upload-file app/build/outputs/apk/release/app-release.apk https://your-server.com/upload
+
+    # التخصيصات الخاصة بـ Gradle و Android
+    android:
+      # إصدار Android الذي سيتم استخدامه
+      version: "30.0.3"
+      # تحديد SDK لتجنب مشاكل التوافق
+      sdk: 30
+      # مسار تثبيت Gradle (يمكن تعديلها حسب الحاجة)
+      gradle:
+        version: "7.0.0"
+
+    # إدارة التبعيات الخاصة بـ Gradle
+    dependencies:
+      pre_cache:
+        - ./gradlew wrapper  # للتأكد من وجود التبعيات اللازمة لـ Gradle
+      cache:
+        - /opt/android-sdk  # لتخزين Android SDK لتسريع البناءات القادمة
+        - ~/.gradle  # تخزين التبعيات لتسريع عملية البناء في المستقبل
+
+    # إعدادات إضافية حول نسخ APK وغيرها
+    artifacts:
+      - app/build/outputs/apk/release/app-release.apk  # تحديد مكان تخزين الـ APK بعد البناء
