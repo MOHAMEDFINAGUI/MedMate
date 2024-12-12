@@ -3,11 +3,10 @@ workflows:
     name: Build and Deploy MedMate
     environment:
       vars:
-        APP_VERSION: 1.0.0
+        APP_VERSION: "1.0.0"  # نسخة التطبيق
         DEBUG_MODE: false
         ANDROID_HOME: "/opt/android-sdk"  # تحديد مكان Android SDK
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"  # تحسينات لتسريع البناء
-    # الخطوات التي سيتم تنفيذها في سير العمل:
     scripts:
       - name: Install dependencies
         script: |
