@@ -1,0 +1,25 @@
+workflows:
+  default:
+    name: Build and Deploy MedMate
+    environment:
+      vars:
+        APP_VERSION: 1.0.0
+        DEBUG_MODE: false
+    scripts:
+      - name: Install dependencies
+        script: |
+          ./gradlew build
+
+      - name: Run unit tests
+        script: |
+          ./gradlew test
+
+      - name: Build APK
+        script: |
+          ./gradlew assembleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
